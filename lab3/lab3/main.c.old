@@ -1,0 +1,97 @@
+// 16
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+#define PIC_SIZE 5
+#define CIRCLE_D 3
+
+typedef struct point {
+    int x;
+    int y;
+} point;
+
+#define IN_POINT(m,p) { (m)[(p).x][(p).y] }
+
+void calculate_in_point(const int pic_from[PIC_SIZE][PIC_SIZE],
+                        int pic_to[PIC_SIZE][PIC_SIZE],
+                        const int circle[CIRCLE_D][CIRCLE_D],
+//                        int (*comp)(),
+                        const point cur,
+                        const point center) {
+    int max = IN_POINT(pic_from, cur);
+
+    // TODO: Refactoring to be. This shit should be rewriten
+    for (int i = 0; i < CIRCLE_D; ++i) {
+        for (int j = 0; j < CIRCLE_D; ++j) {
+            if (circle[i][j]) {
+                if (
+                        cur.x + (center.x - i) < 0
+                        || cur.x + (center.x - i) > PIC_SIZE
+                        || cur.y + (center.y - j) < 0
+                        || cur.y + (center.y - j) > PIC_SIZE
+                        )
+                    continue;
+                if (pic_from[cur.x + (center.x - i)][cur.y + (center.y - j)] > max)
+                    max = pic_from[cur.x + (center.x - i)][cur.y + (center.y - j)];
+            }
+        }
+    }
+    pic_to[cur.x][cur.y] = max;
+}
+
+
+int main1(int argc, char *argv[]){
+    int pic_orig[PIC_SIZE][PIC_SIZE];
+    int pic_res[PIC_SIZE][PIC_SIZE];
+    int circle[CIRCLE_D][CIRCLE_D];
+
+    srand(time(0));
+    for (int i = 0; i < PIC_SIZE; ++i) {
+        for (int j = 0; j < PIC_SIZE; ++j) {
+            pic_orig[i][j] = rand() % 10;
+        }
+    }
+
+    // TODO: cool circles with dynamic memory and pow()
+//    for (int i = 0; i < 3; ++i) {
+//        circle[1][i] = 1;
+//        circle[i][1] = 1;
+//    }
+//    circle[0][0] = 0;
+//    circle[2][0] = 0;
+//    circle[0][2] = 0;
+//    circle[2][2] = 0;
+
+
+    for (int i = 0; i < PIC_SIZE; ++i) {
+        for (int j = 0; j < PIC_SIZE; ++j) {
+            pic_res[i][j] = pic_orig[i][j];
+            printf("%d ", pic_orig[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    printf("\n");
+
+
+    point circle_center = {1,1};
+    for (int i = 0; i < PIC_SIZE; ++i) {
+        for (int j = 0; j < PIC_SIZE; ++j) {
+            point cur = {i,j};
+            calculate_in_point(pic_orig, pic_res, circle, cur, circle_center);
+        }
+    }
+
+    for (int i = 0; i < PIC_SIZE; ++i) {
+        for (int j = 0; j < PIC_SIZE; ++j) {
+            printf("%d ", pic_res[i][j]);
+        }
+        printf("\n");
+    }
+
+
+
+    return 0;
+}
